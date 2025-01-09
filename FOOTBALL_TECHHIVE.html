@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techhive Football Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #9f0e0e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #cccccc;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            width: 1000px; /* Increased width */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .image-container {
+            width: 300px; /* Increased width */
+            height: 300px; /* Increased height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 30px; /* Increased margin */
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 15px;
+        }
+        .game-container {
+            width: 450px; /* Increased width */
+            text-align: center;
+        }
+        .scoreboard {
+            width: 250px; /* Increased width */
+            text-align: center;
+            margin-left: 30px; /* Increased margin */
+        }
+        h1 {
+            margin-bottom: 25px; /* Increased margin */
+            color: #333;
+            font-size: 28px; /* Increased font size */
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px; /* Increased padding */
+            margin-bottom: 20px; /* Increased margin */
+            border: 1px solid #ccc;
+            border-radius: 8px; /* Increased border radius */
+            font-size: 18px; /* Increased font size */
+        }
+        button {
+            padding: 12px 25px; /* Increased padding */
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px; /* Increased border radius */
+            cursor: pointer;
+            font-size: 18px; /* Increased font size */
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 25px; /* Increased margin */
+            font-size: 20px; /* Increased font size */
+            color: #333;
+        }
+        #hint {
+            margin-top: 15px; /* Increased margin */
+            font-size: 16px; /* Increased font size */
+            color: #000000;
+            font-style: italic;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        .score {
+            font-size: 28px; /* Increased font size */
+            font-weight: bold;
+            margin-bottom: 15px; /* Increased margin */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Image Container -->
+        <div class="image-container">
+            <img id="clubImage" src="https://via.placeholder.com/300" alt="Club Symbol">
+        </div>
+
+        <!-- Game Container -->
+        <div class="game-container">
+            <h1>TECHHIVE GAME</h1>
+            <p id="question"></p>
+            <p id="hint"></p>
+            <input type="text" id="guessInput" placeholder="Enter your guess">
+            <button onclick="checkGuess()">Submit</button>
+            <div id="result"></div>
+        </div>
+
+        <!-- Scoreboard -->
+        <div class="scoreboard">
+            <h2>Scoreboard</h2>
+            <p class="score" id="score">0/0</p>
+            <p id="correct-count">Correct answers: 0</p>
+            <p id="incorrect-count">Incorrect answers: 0</p>
+        </div>
+    </div>
+
+    <script>
+        const footballData = [
+            { type: "team", name: "Real Madrid", hint: "This team plays in La Liga and has won the most UEFA Champions League titles." },
+            { type: "team", name: "Manchester United", hint: "This English club is known as the 'Red Devils' and plays at Old Trafford." },
+            { type: "team", name: "FC Barcelona", hint: "This team is famous for its tiki-taka style of play and has Lionel Messi as its legend." },
+            { type: "team", name: "Bayern Munich", hint: "This German club dominates the Bundesliga and has a red and white jersey." },
+            { type: "team", name: "Liverpool", hint: "This English club is known for its anthem 'You'll Never Walk Alone' and plays at Anfield." },
+            { type: "team", name: "Paris Saint-Germain", hint: "This French club is owned by Qatari investors and has Neymar and Mbappé in its squad." },
+            { type: "team", name: "Chelsea", hint: "This English club is based in London and has a blue jersey." },
+            { type: "team", name: "Juventus", hint: "This Italian club is known as 'The Old Lady' and plays in black and white stripes." },
+            { type: "team", name: "Arsenal", hint: "This English club is based in North London and has a red and white jersey." },
+            { type: "team", name: "Manchester City", hint: "This English club is owned by the Abu Dhabi United Group and plays in sky blue." },
+            { type: "team", name: "AC Milan", hint: "This Italian club has won multiple UEFA Champions League titles and plays in red and black stripes." },
+            { type: "team", name: "Inter Milan", hint: "This Italian club is known for its blue and black striped jerseys and fierce rivalry with AC Milan." },
+            { type: "team", name: "Atletico Madrid", hint: "This Spanish club is known for its strong defense and plays at the Wanda Metropolitano." },
+            { type: "team", name: "Borussia Dortmund", hint: "This German club is known for its yellow and black colors and passionate fan base." },
+            { type: "team", name: "Tottenham Hotspur", hint: "This English club is known for its white jerseys and plays at the Tottenham Hotspur Stadium." },
+            { type: "team", name: "Ajax", hint: "This Dutch club is famous for its youth academy and plays in red and white." },
+            { type: "team", name: "Benfica", hint: "This Portuguese club is known for its eagle emblem and plays at Estádio da Luz." },
+            { type: "team", name: "Porto", hint: "This Portuguese club has a blue and white striped jersey and is known for its strong performances in Europe." },
+            { type: "team", name: "Celtic", hint: "This Scottish club is known for its green and white hoops and has a fierce rivalry with Rangers." },
+            { type: "team", name: "Rangers", hint: "This Scottish club is known for its blue jersey and has a historic rivalry with Celtic." },
+            { type: "team", name: "Lazio", hint: "This Italian club is known for its sky blue jerseys and plays at the Stadio Olimpico." },
+            { type: "team", name: "AS Roma", hint: "This Italian club is known for its maroon jerseys and has a passionate fan base." },
+            { type: "team", name: "Valencia", hint: "This Spanish club plays at the Mestalla and is known for its bat emblem." },
+            { type: "team", name: "Sevilla", hint: "This Spanish club is known for its success in the UEFA Europa League." },
+            { type: "team", name: "Olympique Lyonnais", hint: "This French club is known for its strong youth academy and plays in red and white." },
+            { type: "team", name: "Olympique de Marseille", hint: "This French club has a passionate fan base and plays at the Stade Vélodrome." },
+            { type: "team", name: "Bayer Leverkusen", hint: "This German club is known for its red and black colors and has a strong youth academy." },
+            { type: "team", name: "RB Leipzig", hint: "This German club has quickly risen to prominence and plays in red and white." },
+            { type: "team", name: "Atalanta", hint: "This Italian club is known for its attacking style of play and plays at the Gewiss Stadium." },
+            { type: "team", name: "Real Sociedad", hint: "This Spanish club plays at the Reale Arena and is known for its blue and white stripes." },
+            { type: "team", name: "Real Betis", hint: "This Spanish club is known for its green and white colors and passionate fan base." },
+            { type: "team", name: "Southampton", hint: "This English club is known for its youth academy and plays at St Mary's Stadium." },
+            { type: "team", name: "Everton", hint: "This English club is known for its blue jerseys and has a historic rivalry with Liverpool." },
+            { type: "team", name: "Newcastle United", hint: "This English club is known for its black and white stripes and passionate fan base." },
+            { type: "team", name: "Leicester City", hint: "This English club won the Premier League in 2016 and plays at the King Power Stadium." },
+            { type: "player", name: "Lionel Messi", hint: "This Argentine forward is often considered one of the greatest players of all time." },
+            { type: "player", name: "Cristiano Ronaldo", hint: "This Portuguese forward is known for his incredible goal-scoring ability and athleticism." },
+            { type: "player", name: "Neymar Jr", hint: "This Brazilian forward is famous for his dribbling skills and plays for Paris Saint-Germain." },
+            { type: "player", name: "Kylian Mbappé", hint: "This French forward is one of the fastest players in the world and plays for PSG." },
+            { type: "player", name: "Kevin De Bruyne", hint: "This Belgian midfielder is known for his passing and vision, playing for Manchester City." },
+            { type: "player", name: "Robert Lewandowski", hint: "This Polish striker is known for his goal-scoring prowess and plays for Barcelona." },
+            { type: "player", name: "Mohamed Salah", hint: "This Egyptian forward is known for his speed and skill, playing for Liverpool." },
+            { type: "player", name: "Virgil van Dijk", hint: "This Dutch defender is known for his strength and leadership, playing for Liverpool." },
+            { type: "player", name: "Sadio Mané", hint: "This Senegalese forward is known for his pace and skill, playing for Bayern Munich." },
+            { type: "player", name: "Harry Kane", hint: "This English striker is known for his goal-scoring ability and plays for Tottenham Hotspur." },
+            { type: "player", name: "Luka Modrić", hint: "This Croatian midfielder won the Ballon d'Or in 2018 and plays for Real Madrid." },
+            { type: "player", name: "Eden Hazard", hint: "This Belgian winger is known for his dribbling and creativity, previously playing for Chelsea." },
+            { type: "player", name: "Paul Pogba", hint: "This French midfielder is known for his skill and flair, playing for Juventus." },
+            { type: "player", name: "Antoine Griezmann", hint: "This French forward is known for his versatility and plays for Atlético Madrid." },
+            { type: "player", name: "Karim Benzema", hint: "This French striker is known for his goal-scoring ability and plays for Real Madrid." },
+            { type: "player", name: "Raheem Sterling", hint: "This English winger is known for his speed and skill, playing for Chelsea." },
+            { type: "player", name: "Son Heung-min", hint: "This South Korean forward is known for his pace and finishing, playing for Tottenham Hotspur." },
+            { type: "player", name: "Bruno Fernandes", hint: "This Portuguese midfielder is known for his creativity and plays for Manchester United." },
+            { type: "player", name: "Jadon Sancho", hint: "This English winger is known for his dribbling and creativity, playing for Manchester United." },
+            { type: "player", name: "Alisson Becker", hint: "This Brazilian goalkeeper is known for his shot-stopping ability and plays for Liverpool." },
+            { type: "player", name: "Ederson", hint: "This Brazilian goalkeeper is known for his distribution and plays for Manchester City." },
+            { type: "player", name: "Marc-André ter Stegen", hint: "This German goalkeeper is known for his reflexes and plays for FC Barcelona." },
+            { type: "player", name: "Gianluigi Donnarumma", hint: "This Italian goalkeeper is known for his height and plays for Paris Saint-Germain." },
+            { type: "player", name: "Sergio Ramos", hint: "This Spanish defender is known for his leadership and plays for Paris Saint-Germain." },
+            { type: "player", name: "Trent Alexander-Arnold", hint: "This English right-back is known for his crossing ability and plays for Liverpool." },
+            { type: "player", name: "Ruben Dias", hint: "This Portuguese defender is known for his strength and plays for Manchester City." },
+            { type: "player", name: "Matthijs de Ligt", hint: "This Dutch defender is known for his composure and plays for Bayern Munich." },
+            { type: "player", name: "Kalidou Koulibaly", hint: "This Senegalese defender is known for his physicality and plays for Chelsea." },
+            { type: "player", name: "N'Golo Kanté", hint: "This French midfielder is known for his work rate and plays for Chelsea." },
+            { type: "player", name: "Frenkie de Jong", hint: "This Dutch midfielder is known for his passing and plays for FC Barcelona." },
+            { type: "player", name: "Declan Rice", hint: "This English midfielder is known for his defensive skills and plays for Arsenal." },
+            { type: "player", name: "Phil Foden", hint: "This English midfielder is known for his creativity and plays for Manchester City." },
+            { type: "player", name: "Jack Grealish", hint: "This English winger is known for his dribbling and plays for Manchester City." },
+            { type: "player", name: "Christian Pulisic", hint: "This American winger is known for his speed and skill, playing for Chelsea." },
+            { type: "player", name: "Ousmane Dembélé", hint: "This French winger is known for his pace and dribbling, playing for FC Barcelona." },
+            { type: "player", name: "Raúl Jiménez", hint: "This Mexican striker is known for his goal-scoring ability and plays for Wolverhampton Wanderers." },
+            { type: "player", name: "Edinson Cavani", hint: "This Uruguayan striker is known for his goal-scoring prowess and plays for Valencia." },
+            { type: "player", name: "Gonzalo Higuaín", hint: "This Argentine striker is known for his finishing and has played for several top clubs." },
+            { type: "player", name: "Zlatan Ibrahimović", hint: "This Swedish striker is known for his charisma and has played for many top clubs." },
+            { type: "player", name: "Luis Suárez", hint: "This Uruguayan forward is known for his goal-scoring ability and plays for Grêmio." },
+            { type: "player", name: "Dani Alves", hint: "This Brazilian right-back is known for his attacking play and has won numerous titles." },
+            { type: "player", name: "Philippe Coutinho", hint: "This Brazilian midfielder is known for his creativity and has played for Barcelona." },
+            { type: "player", name: "Isco", hint: "This Spanish midfielder is known for his dribbling and creativity, previously playing for Real Madrid." },
+            { type: "player", name: "David Silva", hint: "This Spanish midfielder is known for his vision and creativity, previously playing for Manchester City." },
+            { type: "player", name: "Xavi Hernández", hint: "This Spanish midfielder is known for his passing and played a key role in Barcelona's success." },
+            { type: "player", name: "Andrés Iniesta", hint: "This Spanish midfielder is known for his dribbling and played a key role in Barcelona's success." },
+            { type: "player", name: "Cesc Fàbregas", hint: "This Spanish midfielder is known for his passing and has played for several top clubs." },
+            { type: "player", name: "Yaya Touré", hint: "This Ivorian midfielder is known for his strength and played for Manchester City." },
+            { type: "player", name: "Michael Essien", hint: "This Ghanaian midfielder is known for his strength and played for Chelsea." },
+            { type: "player", name: "Patrick Vieira", hint: "This French midfielder is known for his leadership and played for Arsenal." },
+            { type: "player", name: "Frank Lampard", hint: "This English midfielder is known for his goal-scoring ability and played for Chelsea." },
+            { type: "player", name: "Steven Gerrard", hint: "This English midfielder is known for his leadership and played for Liverpool." },
+            { type: "player", name: "Pelé", hint: "This Brazilian forward is often regarded as one of the greatest footballers of all time." },
+        ];
+
+        let currentItem;
+        let correctCount = 0;
+        let incorrectCount = 0;
+
+        function fetchImage(name) {
+            const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&format=json&list=search&srsearch=${encodeURIComponent(name)}&utf8=1&origin=*`;
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.query.search.length > 0) {
+                        const imageTitle = data.query.search[0].title;
+                        const imageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(imageTitle)}.png`;
+                        document.getElementById("clubImage").src = imageUrl;
+                    } else {
+                        document.getElementById("clubImage").src = "https://via.placeholder.com/300"; // Fallback image
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching image:", error);
+                    document.getElementById("clubImage").src = "https://via.placeholder.com/300"; // Fallback image
+                });
+        }
+
+        function pickRandomItem() {
+            const randomIndex = Math.floor(Math.random() * footballData.length);
+            currentItem = footballData[randomIndex];
+            const questionText = currentItem.type === "team" 
+                ? "Guess the football team:" 
+                : "Guess the football player:";
+            document.getElementById("question").textContent = questionText;
+            document.getElementById("hint").textContent = `Hint: ${currentItem.hint}`;
+            fetchImage(currentItem.name); // Fetch image dynamically
+        }
+
+        function checkGuess() {
+            const guessInput = document.getElementById("guessInput");
+            const userGuess = guessInput.value.trim(); 
+            const resultDiv = document.getElementById("result");
+
+            if (userGuess.toLowerCase() === currentItem.name.toLowerCase()) {
+                resultDiv.textContent = "Correct! 🎉";
+                resultDiv.className = "correct"; 
+                correctCount++;
+            } else {
+                resultDiv.textContent = `Incorrect! The correct answer is ${currentItem.name}.`;
+                resultDiv.className = "incorrect"; 
+                incorrectCount++;
+            }
+
+            const scoreText = `${correctCount}/${correctCount + incorrectCount}`;
+            document.getElementById("score").textContent = scoreText;
+            document.getElementById("correct-count").textContent = `Correct answers: ${correctCount}`;
+            document.getElementById("incorrect-count").textContent = `Incorrect answers: ${incorrectCount}`;
+
+            guessInput.value = "";
+            pickRandomItem();
+        }
+
+        pickRandomItem();
+    </script>
+</body>
+</html>
