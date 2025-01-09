@@ -108,7 +108,10 @@
             <h1>TECHHIVE GAME</h1>
             <p id="question"></p>
             <p id="hint"></p>
-            <input type="text" id="guessInput" placeholder="Enter your guess">
+            <input type="text" id="guessInput" placeholder="Enter your guess" list="playerList">
+            <datalist id="playerList">
+                <!-- Options will be dynamically populated by JavaScript -->
+            </datalist>
             <button onclick="checkGuess()">Submit</button>
             <div id="result"></div>
         </div>
@@ -124,41 +127,6 @@
 
     <script>
         const footballData = [
-            { type: "team", name: "Real Madrid", hint: "This team plays in La Liga and has won the most UEFA Champions League titles." },
-            { type: "team", name: "Manchester United", hint: "This English club is known as the 'Red Devils' and plays at Old Trafford." },
-            { type: "team", name: "FC Barcelona", hint: "This team is famous for its tiki-taka style of play and has Lionel Messi as its legend." },
-            { type: "team", name: "Bayern Munich", hint: "This German club dominates the Bundesliga and has a red and white jersey." },
-            { type: "team", name: "Liverpool", hint: "This English club is known for its anthem 'You'll Never Walk Alone' and plays at Anfield." },
-            { type: "team", name: "Paris Saint-Germain", hint: "This French club is owned by Qatari investors and has Neymar and Mbappé in its squad." },
-            { type: "team", name: "Chelsea", hint: "This English club is based in London and has a blue jersey." },
-            { type: "team", name: "Juventus", hint: "This Italian club is known as 'The Old Lady' and plays in black and white stripes." },
-            { type: "team", name: "Arsenal", hint: "This English club is based in North London and has a red and white jersey." },
-            { type: "team", name: "Manchester City", hint: "This English club is owned by the Abu Dhabi United Group and plays in sky blue." },
-            { type: "team", name: "AC Milan", hint: "This Italian club has won multiple UEFA Champions League titles and plays in red and black stripes." },
-            { type: "team", name: "Inter Milan", hint: "This Italian club is known for its blue and black striped jerseys and fierce rivalry with AC Milan." },
-            { type: "team", name: "Atletico Madrid", hint: "This Spanish club is known for its strong defense and plays at the Wanda Metropolitano." },
-            { type: "team", name: "Borussia Dortmund", hint: "This German club is known for its yellow and black colors and passionate fan base." },
-            { type: "team", name: "Tottenham Hotspur", hint: "This English club is known for its white jerseys and plays at the Tottenham Hotspur Stadium." },
-            { type: "team", name: "Ajax", hint: "This Dutch club is famous for its youth academy and plays in red and white." },
-            { type: "team", name: "Benfica", hint: "This Portuguese club is known for its eagle emblem and plays at Estádio da Luz." },
-            { type: "team", name: "Porto", hint: "This Portuguese club has a blue and white striped jersey and is known for its strong performances in Europe." },
-            { type: "team", name: "Celtic", hint: "This Scottish club is known for its green and white hoops and has a fierce rivalry with Rangers." },
-            { type: "team", name: "Rangers", hint: "This Scottish club is known for its blue jersey and has a historic rivalry with Celtic." },
-            { type: "team", name: "Lazio", hint: "This Italian club is known for its sky blue jerseys and plays at the Stadio Olimpico." },
-            { type: "team", name: "AS Roma", hint: "This Italian club is known for its maroon jerseys and has a passionate fan base." },
-            { type: "team", name: "Valencia", hint: "This Spanish club plays at the Mestalla and is known for its bat emblem." },
-            { type: "team", name: "Sevilla", hint: "This Spanish club is known for its success in the UEFA Europa League." },
-            { type: "team", name: "Olympique Lyonnais", hint: "This French club is known for its strong youth academy and plays in red and white." },
-            { type: "team", name: "Olympique de Marseille", hint: "This French club has a passionate fan base and plays at the Stade Vélodrome." },
-            { type: "team", name: "Bayer Leverkusen", hint: "This German club is known for its red and black colors and has a strong youth academy." },
-            { type: "team", name: "RB Leipzig", hint: "This German club has quickly risen to prominence and plays in red and white." },
-            { type: "team", name: "Atalanta", hint: "This Italian club is known for its attacking style of play and plays at the Gewiss Stadium." },
-            { type: "team", name: "Real Sociedad", hint: "This Spanish club plays at the Reale Arena and is known for its blue and white stripes." },
-            { type: "team", name: "Real Betis", hint: "This Spanish club is known for its green and white colors and passionate fan base." },
-            { type: "team", name: "Southampton", hint: "This English club is known for its youth academy and plays at St Mary's Stadium." },
-            { type: "team", name: "Everton", hint: "This English club is known for its blue jerseys and has a historic rivalry with Liverpool." },
-            { type: "team", name: "Newcastle United", hint: "This English club is known for its black and white stripes and passionate fan base." },
-            { type: "team", name: "Leicester City", hint: "This English club won the Premier League in 2016 and plays at the King Power Stadium." },
             { type: "player", name: "Lionel Messi", hint: "This Argentine forward is often considered one of the greatest players of all time." },
             { type: "player", name: "Cristiano Ronaldo", hint: "This Portuguese forward is known for his incredible goal-scoring ability and athleticism." },
             { type: "player", name: "Neymar Jr", hint: "This Brazilian forward is famous for his dribbling skills and plays for Paris Saint-Germain." },
@@ -177,7 +145,6 @@
             { type: "player", name: "Raheem Sterling", hint: "This English winger is known for his speed and skill, playing for Chelsea." },
             { type: "player", name: "Son Heung-min", hint: "This South Korean forward is known for his pace and finishing, playing for Tottenham Hotspur." },
             { type: "player", name: "Bruno Fernandes", hint: "This Portuguese midfielder is known for his creativity and plays for Manchester United." },
-            { type: "player", name: "Jadon Sancho", hint: "This English winger is known for his dribbling and creativity, playing for Manchester United." },
             { type: "player", name: "Alisson Becker", hint: "This Brazilian goalkeeper is known for his shot-stopping ability and plays for Liverpool." },
             { type: "player", name: "Ederson", hint: "This Brazilian goalkeeper is known for his distribution and plays for Manchester City." },
             { type: "player", name: "Marc-André ter Stegen", hint: "This German goalkeeper is known for his reflexes and plays for FC Barcelona." },
@@ -219,22 +186,31 @@
         let incorrectCount = 0;
 
         function fetchImage(name) {
-            const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&format=json&list=search&srsearch=${encodeURIComponent(name)}&utf8=1&origin=*`;
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.query.search.length > 0) {
-                        const imageTitle = data.query.search[0].title;
-                        const imageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(imageTitle)}.png`;
-                        document.getElementById("clubImage").src = imageUrl;
-                    } else {
-                        document.getElementById("clubImage").src = "https://via.placeholder.com/300"; // Fallback image
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching image:", error);
-                    document.getElementById("clubImage").src = "https://via.placeholder.com/300"; // Fallback image
-                });
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 300;
+            canvas.height = 300;
+
+            // Draw a football-themed background
+            ctx.fillStyle = '#9f0e0e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw a football
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 50, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Draw the player's name
+            ctx.font = '24px Arial';
+            ctx.fillStyle = '#000000';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(name, canvas.width / 2, canvas.height / 2);
+
+            // Set the image source to the generated image
+            const imageDataURL = canvas.toDataURL();
+            document.getElementById("clubImage").src = imageDataURL;
         }
 
         function pickRandomItem() {
@@ -272,6 +248,19 @@
             pickRandomItem();
         }
 
+        function populatePlayerList() {
+            const playerList = document.getElementById("playerList");
+            footballData.forEach(item => {
+                if (item.type === "player") {
+                    const option = document.createElement("option");
+                    option.value = item.name;
+                    playerList.appendChild(option);
+                }
+            });
+        }
+
+        // Call this function when the page loads
+        populatePlayerList();
         pickRandomItem();
     </script>
 </body>
