@@ -37,6 +37,9 @@
             max-height: 100%;
             border-radius: 15px;
         }
+        .blurred {
+            filter: blur(10px);
+        }
         .game-container {
             width: 450px; /* Increased width */
             text-align: center;
@@ -100,7 +103,7 @@
     <div class="container">
         <!-- Image Container -->
         <div class="image-container">
-            <img id="clubImage" src="https://via.placeholder.com/300" alt="Club Symbol">
+            <img id="clubImage" alt="Player Image">
         </div>
 
         <!-- Game Container -->
@@ -162,7 +165,7 @@
             { type: "player", name: "Christian Pulisic", hint: "This American winger is known for his speed and skill, playing for Chelsea." },
             { type: "player", name: "Ousmane Dembélé", hint: "This French winger is known for his pace and dribbling, playing for FC Barcelona." },
             { type: "player", name: "Raúl Jiménez", hint: "This Mexican striker is known for his goal-scoring ability and plays for Wolverhampton Wanderers." },
-            { type: "player", name: "Edinson Cavani", hint: "This Uruguayan striker is known for his goal-scoring prowess and plays for Valencia." },
+            { type: "player", name: "Edinson Cavani", hint: "This Uruguayan striker is known for his goal-scoring prowess and plays for Boca Juniors." },
             { type: "player", name: "Gonzalo Higuaín", hint: "This Argentine striker is known for his finishing and has played for several top clubs." },
             { type: "player", name: "Zlatan Ibrahimović", hint: "This Swedish striker is known for his charisma and has played for many top clubs." },
             { type: "player", name: "Luis Suárez", hint: "This Uruguayan forward is known for his goal-scoring ability and plays for Grêmio." },
@@ -186,43 +189,34 @@
         let incorrectCount = 0;
 
         function fetchImage(name) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 300;
-            canvas.height = 300;
-
-            // Draw a football-themed background
-            ctx.fillStyle = '#9f0e0e';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw a football
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.arc(canvas.width / 2, canvas.height / 2, 50, 0, 2 * Math.PI);
-            ctx.fill();
-
-            // Draw the player's name
-            ctx.font = '24px Arial';
-            ctx.fillStyle = '#000000';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(name, canvas.width / 2, canvas.height / 2);
-
-            // Set the image source to the generated image
-            const imageDataURL = canvas.toDataURL();
-            document.getElementById("clubImage").src = imageDataURL;
-        }
-
+    const playerName = name.replace(" ", "_");
+    const wikiApiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${playerName}&prop=pageimages&format=json&piprop=original&origin=*`;
+    fetch(wikiApiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const pageId = Object.keys(data.query.pages)[0];
+            if (data.query.pages[pageId].hasOwnProperty('original')) {
+                const imageUrl = data.query.pages[pageId].original.source;
+                const imageElement = document.getElementById("clubImage");
+                imageElement.src = imageUrl;
+                imageElement.classList.add("blurred"); // Add a CSS class to blur the image
+            } else {
+                console.log("No image found for this player.");
+                document.getElementById("clubImage").src = "https://via.placeholder.com/300"; // default image
+            }
+        })
+        .catch(error => console.error(error));
+    }
         function pickRandomItem() {
-            const randomIndex = Math.floor(Math.random() * footballData.length);
-            currentItem = footballData[randomIndex];
-            const questionText = currentItem.type === "team" 
-                ? "Guess the football team:" 
-                : "Guess the football player:";
-            document.getElementById("question").textContent = questionText;
-            document.getElementById("hint").textContent = `Hint: ${currentItem.hint}`;
-            fetchImage(currentItem.name); // Fetch image dynamically
-        }
+    const randomIndex = Math.floor(Math.random() * footballData.length);
+    currentItem = footballData[randomIndex];
+    const questionText = currentItem.type === "team" 
+        ? "Guess the football team:" 
+        : "Guess the football player:";
+    document.getElementById("question").textContent = questionText;
+    document.getElementById("hint").textContent = `Hint: ${currentItem.hint}`;
+    fetchImage(currentItem.name); // Fetch image from Wikipedia API
+}
 
         function checkGuess() {
             const guessInput = document.getElementById("guessInput");
