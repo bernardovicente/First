@@ -19,18 +19,18 @@
             padding: 40px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            width: 1000px; /* Increased width */
+            width: 80%;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .image-container {
-            width: 300px; /* Increased width */
-            height: 300px; /* Increased height */
+            width: 30%;
+            height: 300px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-right: 30px; /* Increased margin */
+            margin-right: 20px;
         }
         .image-container img {
             max-width: 100%;
@@ -41,48 +41,44 @@
             filter: blur(10px);
         }
         .game-container {
-            width: 450px; /* Increased width */
+            width: 40%;
+            padding: 20px;
             text-align: center;
         }
         .scoreboard {
-            width: 250px; /* Increased width */
+            width: 20%;
             text-align: center;
-            margin-left: 30px; /* Increased margin */
+            margin-left: 20px;
         }
         h1 {
-            margin-bottom: 25px; /* Increased margin */
+            margin-bottom: 25px;
             color: #333;
-            font-size: 28px; /* Increased font size */
+            font-size: 28px;
         }
         input[type="text"] {
             width: 100%;
-            padding: 12px; /* Increased padding */
-            margin-bottom: 20px; /* Increased margin */
+            padding: 10px;
+            margin-bottom: 10px;
             border: 1px solid #ccc;
-            border-radius: 8px; /* Increased border radius */
-            font-size: 18px; /* Increased font size */
+            border-radius: 5px;
         }
         button {
-            padding: 12px 25px; /* Increased padding */
+            width: 100%;
+            padding: 10px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 8px; /* Increased border radius */
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 18px; /* Increased font size */
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #0056b3;
         }
         #result {
-            margin-top: 25px; /* Increased margin */
-            font-size: 20px; /* Increased font size */
+            margin-top: 20px;
+            font-size: 20px;
             color: #333;
         }
         #hint {
-            margin-top: 15px; /* Increased margin */
-            font-size: 16px; /* Increased font size */
+            margin-top: 15px;
+            font-size: 16px;
             color: #000000;
             font-style: italic;
         }
@@ -93,9 +89,9 @@
             color: red;
         }
         .score {
-            font-size: 28px; /* Increased font size */
+            font-size: 28px;
             font-weight: bold;
-            margin-bottom: 15px; /* Increased margin */
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -218,29 +214,31 @@
     fetchImage(currentItem.name); // Fetch image from Wikipedia API
 }
 
-        function checkGuess() {
-            const guessInput = document.getElementById("guessInput");
-            const userGuess = guessInput.value.trim(); 
-            const resultDiv = document.getElementById("result");
+function checkGuess() {
+    const guessInput = document.getElementById("guessInput");
+    const userGuess = guessInput.value.trim(); 
+    const resultDiv = document.getElementById("result");
+    const imageElement = document.getElementById("clubImage");
 
-            if (userGuess.toLowerCase() === currentItem.name.toLowerCase()) {
-                resultDiv.textContent = "Correct! 🎉";
-                resultDiv.className = "correct"; 
-                correctCount++;
-            } else {
-                resultDiv.textContent = `Incorrect! The correct answer is ${currentItem.name}.`;
-                resultDiv.className = "incorrect"; 
-                incorrectCount++;
-            }
+    if (userGuess.toLowerCase() === currentItem.name.toLowerCase()) {
+        resultDiv.textContent = "Correct! ";
+        resultDiv.className = "correct"; 
+        correctCount++;
+        imageElement.classList.remove("blurred"); // Remove blur effect
+    } else {
+        resultDiv.textContent = `Incorrect! The correct answer is ${currentItem.name}.`;
+        resultDiv.className = "incorrect"; 
+        incorrectCount++;
+    }
 
-            const scoreText = `${correctCount}/${correctCount + incorrectCount}`;
-            document.getElementById("score").textContent = scoreText;
-            document.getElementById("correct-count").textContent = `Correct answers: ${correctCount}`;
-            document.getElementById("incorrect-count").textContent = `Incorrect answers: ${incorrectCount}`;
+    const scoreText = `${correctCount}/${correctCount + incorrectCount}`;
+    document.getElementById("score").textContent = scoreText;
+    document.getElementById("correct-count").textContent = `Correct answers: ${correctCount}`;
+    document.getElementById("incorrect-count").textContent = `Incorrect answers: ${incorrectCount}`;
 
-            guessInput.value = "";
-            pickRandomItem();
-        }
+    guessInput.value = "";
+    pickRandomItem();
+}
 
         function populatePlayerList() {
             const playerList = document.getElementById("playerList");
@@ -259,3 +257,6 @@
     </script>
 </body>
 </html>
+
+
+
